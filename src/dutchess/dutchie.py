@@ -65,9 +65,27 @@ async def dispensary_query(session, distance):
     # Open Network requests, filter for XHR or "graphql" and find consumer dispensaries request
     # In request URL, copy hash value (between %22 characters or spaces)
     # copy paste hash into here in a new line
+    hash_from_website = "6a01ebd98dc54f065340994117e0677c7a93c9805ec94a154643be7b08c86b35"
+    hash_file_name = 'hash_from_website.txt'
+    file = open(hash_file_name)
+    for line in file:
+        hash_from_website = line
+    if input("Use existing hash (y/n)?  ").lower() == 'y':
+        print("Using existing hash: " + hash_from_website)
+    else:
+      print("TO GET NEW HASH: go to URL: https://dutchie.com/dispensary/Ethos-Watertown-Medical/product/gelatti-cookies")
+      print("Open Network requests, search for 'ConsumerDispensaries'")
+      print("Copy entire request URL")
+      print("Example: https://dutchie.com/graphql?operationName=ConsumerDispensaries&variables=%7B%22dispensaryFilter%22%3A%7B%22cNameOrID%22%3A%22Ethos-Watertown-Medical%22%7D%7D&extensions=%7B%22persistedQuery%22%3A%7B%22version%22%3A1%2C%22sha256Hash%22%3A%226a01ebd98dc54f065340994117e0677c7a93c9805ec94a154643be7b08c86b35%22%7D%7D")
+      url_from_website = input("Copy paste URL here: ")
+      hash_from_website = url_from_website[-73:-9]
+      print("Saving hash for next time: " + hash_from_website)
+      with open(hash_file_name, 'w') as filetowrite:
+          filetowrite.write(hash_from_website)
+        
     data = await query(session,
                        "ConsumerDispensaries",
-                       "10f05353272bab0f3ceeff818feef0a05745241316be3a5eb9f3e66ca927a40d",
+                       hash_from_website,
                        variables)
     return [Box(d) for d in data['filteredDispensaries']]
 
