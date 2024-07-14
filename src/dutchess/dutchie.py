@@ -22,6 +22,9 @@ async def raw_query(session, op_name, query_hash, variables):
         extensions=json.dumps(extensions))
 
     request = requests.Request("GET", "https://dutchie.com/graphql", params=params).prepare()
+    # I used the following two lines to test the working URL copied directly from the site, with an additional request header. The original code started working after that. It may be because I copied pasted the working hash one more time. -Rey
+    # request = requests.Request("GET", "https://dutchie.com/graphql?operationName=ConsumerDispensaries&variables=%7B%22dispensaryFilter%22%3A%7B%22cNameOrID%22%3A%22liberty-somerville%22%7D%7D&extensions=%7B%22persistedQuery%22%3A%7B%22version%22%3A1%2C%22sha256Hash%22%3A%22389b0510b406db377723755723e0ed1b545f295a8b440c5525928224a3edc486%22%7D%7D").prepare()
+    # request.headers["X-Dutchie-Session"] = "session=eyJpZCI6IjZmZDcyNzE1LWM4MmItNDMzYS1iMThkLTk0NzIyMDc0YzhjNyIsImV4cGlyZXMiOjE3MTIzMzk0OTg3NDJ9;session_sig=6T3fo22obkD_8N2vDvH59kqy_io"
     logger.debug("Fetching from upstream.", query_params=params, url=request.url)
     request.headers["Content-Type"] = "application/json"
     response = await asyncio.to_thread(session.send, request)
@@ -58,6 +61,10 @@ async def dispensary_query(session, distance):
             offerCurbsidePickup = False,
             offerPickup = True))
 
+    # TO GET NEW HASH: go to URL: https://dutchie.com/dispensary/Ethos-Watertown-Medical/product/gelatti-cookies
+    # Open Network requests, filter for XHR or "graphql" and find consumer dispensaries request
+    # In request URL, copy hash value (between %22 characters or spaces)
+    # copy paste hash into here in a new line
     data = await query(session,
                        "ConsumerDispensaries",
                        "10f05353272bab0f3ceeff818feef0a05745241316be3a5eb9f3e66ca927a40d",
